@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby & Me Tracker 🌸</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blush:#F2C4CE; --rose:#D98EA4; --deep:#8B4A6B;
+  --cream:#FDF6F0; --warm:#F5E6D8; --mint:#B8D8C8;
+  --mint-deep:#5A9E7C; --text:#3D2B35; --text-light:#9B7A8A;
+  --water:#7EC8E3; --water-deep:#2E86AB; --gold:#D4A853;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--text);
+  min-height:100vh;padding:20px 16px 60px;
+  background-image:
+    radial-gradient(ellipse at 80% 10%,rgba(242,196,206,.35) 0%,transparent 55%),
+    radial-gradient(ellipse at 10% 80%,rgba(184,216,200,.25) 0%,transparent 50%);
+}
+
+/* HEADER */
+header{text-align:center;margin-bottom:22px;animation:fadeDown .6s ease both;}
+.badge{display:inline-block;background:linear-gradient(135deg,var(–blush),var(–warm));color:var(–deep);font-size:12px;font-weight:500;letter-spacing:1.5px;text-transform:uppercase;padding:5px 14px;border-radius:20px;margin-bottom:10px;}
+h1{font-family:‘Playfair Display’,serif;font-size:26px;color:var(–deep);line-height:1.2;}
+h1 em{font-style:italic;color:var(–rose);}
+.subtitle{font-size:13px;color:var(–text-light);margin-top:6px;}
+.date-bar{text-align:center;font-size:13px;color:var(–text-light);margin-bottom:18px;}
+
+/* TABS */
+.tab-nav{display:flex;background:white;border-radius:16px;padding:4px;margin-bottom:18px;box-shadow:0 2px 12px rgba(139,74,107,.08);}
+.tab-btn{flex:1;padding:10px 4px;border:none;border-radius:12px;background:transparent;font-family:‘DM Sans’,sans-serif;font-size:12px;font-weight:500;color:var(–text-light);cursor:pointer;transition:all .2s;}
+.tab-btn.active{background:linear-gradient(135deg,var(–rose),var(–deep));color:white;box-shadow:0 2px 8px rgba(139,74,107,.25);}
+
+/* PAGES */
+.page{display:none;}
+.page.active{display:block;animation:fadeUp .35s ease both;}
+
+/* CARDS */
+.card{background:white;border-radius:20px;padding:20px 18px;margin-bottom:14px;box-shadow:0 2px 20px rgba(139,74,107,.07);}
+.card-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.icon-circle{width:36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.icon-rose{background:linear-gradient(135deg,#F9D5DF,#F2C4CE);}
+.icon-mint{background:linear-gradient(135deg,#C8EDD9,#B8D8C8);}
+.icon-water{background:linear-gradient(135deg,#BFE8F5,#A0D8EF);}
+.card-title{font-family:‘Playfair Display’,serif;font-size:16px;color:var(–deep);}
+.card-sub{font-size:11px;color:var(–text-light);}
+
+/* BUTTONS */
+.btn{flex:1;padding:11px 10px;border:none;border-radius:13px;font-family:‘DM Sans’,sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;}
+.btn:active{transform:scale(.97);}
+.btn-start{background:linear-gradient(135deg,var(–rose),var(–deep));color:white;}
+.btn-stop{background:var(–warm);color:var(–deep);}
+.btn-outline{background:transparent;border:1.5px solid var(–blush);color:var(–rose);}
+.btn-primary{background:linear-gradient(135deg,var(–rose),var(–deep));color:white;border:none;border-radius:12px;padding:11px 20px;font-family:‘DM Sans’,sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+.btn-ghost{background:var(–warm);color:var(–deep);border:none;border-radius:12px;padding:11px 16px;font-family:‘DM Sans’,sans-serif;font-size:13px;cursor:pointer;}
+
+/* EXERCISE */
+.exercise-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:12px;}
+.ex-chip{padding:8px 4px;border-radius:11px;border:1.5px solid var(–blush);background:white;text-align:center;font-size:10px;color:var(–text-light);cursor:pointer;transition:all .2s;}
+.ex-chip .ex-icon{font-size:18px;display:block;margin-bottom:2px;}
+.ex-chip:hover{border-color:var(–rose);color:var(–deep);}
+.ex-chip.active{background:linear-gradient(135deg,#F9D5DF,#F2C4CE);border-color:var(–rose);color:var(–deep);font-weight:500;}
+
+/* INTENSITY */
+.intensity-row{display:flex;gap:7px;margin-bottom:12px;}
+.int-btn{flex:1;padding:8px 4px;border-radius:9px;border:1.5px solid #eee;background:white;font-size:10px;color:var(–text-light);cursor:pointer;text-align:center;transition:all .2s;}
+.int-btn.active-low{border-color:var(–mint-deep);background:#E8F5EE;color:var(–mint-deep);font-weight:500;}
+.int-btn.active-med{border-color:var(–gold);background:#FDF4E3;color:var(–gold);font-weight:500;}
+.int-btn.active-high{border-color:var(–rose);background:#FDEDF1;color:var(–rose);font-weight:500;}
+
+/* TIMER */
+.timer-display{text-align:center;padding:14px 0 10px;}
+.timer-number{font-family:‘Playfair Display’,serif;font-size:52px;color:var(–deep);letter-spacing:-2px;line-height:1;}
+.timer-label{font-size:11px;color:var(–text-light);letter-spacing:1px;text-transform:uppercase;margin-top:4px;}
+.timer-btns{display:flex;gap:9px;margin-top:13px;}
+.note-row{display:flex;gap:8px;margin-top:10px;}
+.note-input{flex:1;padding:10px 13px;border-radius:11px;border:1.5px solid var(–blush);font-family:‘DM Sans’,sans-serif;font-size:12px;color:var(–text);background:var(–cream);outline:none;}
+.note-input:focus{border-color:var(–rose);}
+
+/* WATER */
+.water-goal-bar{background:#EEF8FC;border-radius:11px;height:12px;overflow:hidden;margin:10px 0 6px;}
+.water-fill{height:100%;background:linear-gradient(90deg,var(–water),var(–water-deep));border-radius:11px;transition:width .4s ease;}
+.water-count{text-align:center;font-family:‘Playfair Display’,serif;font-size:30px;color:var(–water-deep);margin:6px 0 3px;}
+.water-goal-text{text-align:center;font-size:12px;color:var(–text-light);}
+.glass-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin:12px 0 9px;}
+.glass-btn{aspect-ratio:1;border-radius:13px;border:2px solid #BFE8F5;background:white;font-size:20px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;}
+.glass-btn.filled{background:linear-gradient(135deg,#BFE8F5,#7EC8E3);border-color:var(–water-deep);}
+.glass-btn:active{transform:scale(.93);}
+.water-quick{display:flex;gap:8px;}
+.btn-water{flex:1;padding:10px;border-radius:11px;border:none;font-family:‘DM Sans’,sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;}
+.btn-water-add{background:linear-gradient(135deg,var(–water),var(–water-deep));color:white;}
+.btn-water-remove{background:#EEF8FC;color:var(–water-deep);}
+
+/* STATS */
+.stats-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px;}
+.stat-box{background:white;border-radius:15px;padding:13px 8px;text-align:center;box-shadow:0 2px 12px rgba(139,74,107,.06);}
+.stat-val{font-family:‘Playfair Display’,serif;font-size:20px;color:var(–deep);}
+.stat-label{font-size:9px;color:var(–text-light);text-transform:uppercase;letter-spacing:.7px;margin-top:2px;}
+
+/* TIP */
+.tip-card{background:linear-gradient(135deg,#FDF0F4,#F9E8F0);border:1px solid var(–blush);border-radius:15px;padding:13px 15px;margin-bottom:14px;font-size:12px;color:var(–deep);line-height:1.5;}
+
+/* LOG ITEMS */
+.log-item{display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(–cream);border-radius:11px;margin-bottom:6px;animation:fadeUp .3s ease both;}
+.log-item-icon{font-size:18px;}
+.log-item-info{flex:1;}
+.log-item-name{font-size:13px;font-weight:500;color:var(–text);}
+.log-item-meta{font-size:10px;color:var(–text-light);}
+.log-item-dur{font-family:‘Playfair Display’,serif;font-size:14px;color:var(–deep);}
+.log-item-del{background:none;border:none;color:#ccc;font-size:14px;cursor:pointer;padding:2px 6px;border-radius:6px;transition:color .2s;}
+.log-item-del:hover{color:var(–rose);}
+.log-empty{text-align:center;color:var(–text-light);font-size:12px;padding:18px 0;}
+
+/* ====== CALENDAR ====== */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-nav-btn{width:34px;height:34px;border-radius:10px;border:1.5px solid var(–blush);background:white;font-size:16px;color:var(–rose);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+.cal-nav-btn:hover{background:var(–blush);}
+.cal-month-title{font-family:‘Playfair Display’,serif;font-size:17px;color:var(–deep);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dow{text-align:center;font-size:9px;font-weight:500;color:var(–text-light);text-transform:uppercase;letter-spacing:.5px;padding:4px 0 6px;}
+.cal-day{aspect-ratio:1;border-radius:10px;border:none;background:transparent;font-size:12px;color:var(–text);cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;transition:all .15s;}
+.cal-day:hover:not(.cal-empty):not(.cal-future){background:var(–warm);}
+.cal-day.cal-empty{cursor:default;}
+.cal-day.cal-future{color:#ddd;cursor:default;}
+.cal-day.cal-today{background:linear-gradient(135deg,var(–blush),#F9D5DF);color:var(–deep);font-weight:600;}
+.cal-day.cal-selected{background:linear-gradient(135deg,var(–rose),var(–deep));color:white;box-shadow:0 2px 8px rgba(139,74,107,.3);}
+.dot-row{display:flex;gap:2px;margin-top:1px;}
+.dot{width:4px;height:4px;border-radius:50%;}
+.dot-ex{background:var(–rose);}
+.dot-water{background:var(–water-deep);}
+.dot-ex-w{background:white;}
+.dot-water-w{background:rgba(255,255,255,.7);}
+.dot-vit{background:#B87FD4;}
+.dot-vit-w{background:rgba(255,255,255,.8);}
+
+/* SELECTED DAY */
+.sel-day-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:14px;}
+.sel-day-title{font-family:‘Playfair Display’,serif;font-size:16px;color:var(–deep);}
+.sel-day-sub{font-size:11px;color:var(–text-light);margin-top:2px;}
+.add-past-btn{background:linear-gradient(135deg,var(–rose),var(–deep));color:white;border:none;border-radius:11px;padding:8px 14px;font-family:‘DM Sans’,sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;flex-shrink:0;}
+
+/* MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(61,43,53,.5);z-index:100;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease;}
+.modal{background:white;border-radius:24px 24px 0 0;padding:24px 20px 38px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;animation:slideUp .3s ease;}
+.modal-handle{width:36px;height:4px;background:#eee;border-radius:2px;margin:0 auto 18px;}
+.modal-title{font-family:‘Playfair Display’,serif;font-size:18px;color:var(–deep);margin-bottom:16px;}
+.modal-title span{font-style:italic;color:var(–rose);}
+.section-label{font-size:11px;font-weight:500;color:var(–text-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;}
+.form-label{font-size:12px;color:var(–text-light);margin-bottom:5px;display:block;}
+.form-row{margin-bottom:13px;}
+.form-input{width:100%;padding:11px 13px;border-radius:12px;border:1.5px solid var(–blush);font-family:‘DM Sans’,sans-serif;font-size:13px;color:var(–text);background:var(–cream);outline:none;}
+.form-input:focus{border-color:var(–rose);}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px;}
+.divider{height:1px;background:#f0e8ec;margin:14px 0;}
+.modal-btns{display:flex;gap:10px;margin-top:18px;}
+.water-past-row{display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+.water-past-slider{flex:1;accent-color:var(–water-deep);}
+.water-past-val{font-family:‘Playfair Display’,serif;font-size:22px;color:var(–water-deep);min-width:26px;text-align:center;}
+
+/* ALL LOG group */
+.log-group-label{font-size:11px;font-weight:500;color:var(–text-light);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;margin-top:4px;}
+
+/* VITAMIN CHECKLIST */
+.icon-vit{background:linear-gradient(135deg,#E8D5F9,#D4B8F0);}
+.vit-list{display:flex;flex-direction:column;gap:8px;}
+.vit-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:13px;border:1.5px solid #EDE0F7;background:white;cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;}
+.vit-item:active{transform:scale(.98);}
+.vit-item.checked{background:linear-gradient(135deg,#F3E8FD,#EAD5FA);border-color:#C99EE8;}
+.vit-checkbox{width:22px;height:22px;border-radius:7px;border:2px solid #D4B8F0;background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;font-size:13px;}
+.vit-item.checked .vit-checkbox{background:linear-gradient(135deg,#B87FD4,#8B4A6B);border-color:#8B4A6B;color:white;}
+.vit-info{flex:1;}
+.vit-name{font-size:13px;font-weight:500;color:var(–text);}
+.vit-desc{font-size:10px;color:var(–text-light);margin-top:1px;}
+.vit-item.checked .vit-name{color:#6B3A8B;}
+.vit-item.checked .vit-desc{color:#A07BC0;}
+.vit-emoji{font-size:20px;}
+.vit-progress{display:flex;align-items:center;gap:10px;margin-top:12px;}
+.vit-prog-bar{flex:1;height:8px;background:#EDE0F7;border-radius:6px;overflow:hidden;}
+.vit-prog-fill{height:100%;background:linear-gradient(90deg,#C99EE8,#8B4A6B);border-radius:6px;transition:width .4s ease;}
+.vit-prog-text{font-size:11px;color:#8B4A6B;font-weight:500;white-space:nowrap;}
+.vit-all-done{text-align:center;font-size:12px;color:#8B4A6B;font-weight:500;margin-top:10px;padding:8px;background:linear-gradient(135deg,#F3E8FD,#EAD5FA);border-radius:10px;animation:fadeUp .3s ease;}
+
+/* modal vitamin checkboxes */
+.modal-vit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:4px;}
+.modal-vit-item{display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:12px;border:1.5px solid #EDE0F7;background:white;cursor:pointer;transition:all .2s;}
+.modal-vit-item.checked{background:linear-gradient(135deg,#F3E8FD,#EAD5FA);border-color:#C99EE8;}
+.modal-vit-cb{width:18px;height:18px;border-radius:5px;border:2px solid #D4B8F0;background:white;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;transition:all .2s;}
+.modal-vit-item.checked .modal-vit-cb{background:linear-gradient(135deg,#B87FD4,#8B4A6B);border-color:#8B4A6B;color:white;}
+.modal-vit-label{font-size:12px;color:var(–text);}
+.modal-vit-item.checked .modal-vit-label{color:#6B3A8B;font-weight:500;}
+
+/* ANIMATIONS */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-12px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes slideUp{from{transform:translateY(30px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.pulse{animation:pulse 1.5s ease-in-out infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.55;}}
+</style>
+
+</head>
+<body>
+
+<header>
+  <div class="badge">🌸 Minggu ke-26</div>
+  <h1>Baby & <em>Me</em> Tracker</h1>
+  <p class="subtitle">Tetap aktif & terhidrasi untuk kamu dan si kecil 💕</p>
+</header>
+<div class="date-bar" id="dateBar"></div>
+
+<!-- TABS -->
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('today',this)">🏠 Hari Ini</button>
+  <button class="tab-btn" onclick="switchTab('calendar',this)">📅 Kalender</button>
+  <button class="tab-btn" onclick="switchTab('log',this)">📋 Semua Log</button>
+</div>
+
+<!-- ===== TODAY ===== -->
+
+<div class="page active" id="page-today">
+  <div class="tip-card">💡 <strong>Tips hari ini:</strong> Di trimester 3 mendekati, olahraga ringan seperti jalan kaki & yoga prenatal sangat baik untuk persiapan persalinan. Hindari posisi telentang terlalu lama ya!</div>
+
+  <div class="stats-strip">
+    <div class="stat-box"><div class="stat-val" id="totalMinToday">0</div><div class="stat-label">Menit Hari Ini</div></div>
+    <div class="stat-box"><div class="stat-val" id="totalSessionsToday">0</div><div class="stat-label">Sesi</div></div>
+    <div class="stat-box"><div class="stat-val" id="waterGlassesToday">0</div><div class="stat-label">Gelas Air</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="icon-circle icon-rose">🏃‍♀️</div>
+      <div><div class="card-title">Live Tracker</div><div class="card-sub">Pilih jenis & mulai!</div></div>
+    </div>
+    <div class="exercise-grid" id="exGrid">
+      <div class="ex-chip active" onclick="selectExercise(this,'Jalan Kaki','🚶‍♀️')"><span class="ex-icon">🚶‍♀️</span>Jalan Kaki</div>
+      <div class="ex-chip" onclick="selectExercise(this,'Yoga Prenatal','🧘‍♀️')"><span class="ex-icon">🧘‍♀️</span>Yoga</div>
+      <div class="ex-chip" onclick="selectExercise(this,'Renang','🏊‍♀️')"><span class="ex-icon">🏊‍♀️</span>Renang</div>
+      <div class="ex-chip" onclick="selectExercise(this,'Senam Hamil','🤸‍♀️')"><span class="ex-icon">🤸‍♀️</span>Senam</div>
+      <div class="ex-chip" onclick="selectExercise(this,'Peregangan','🙆‍♀️')"><span class="ex-icon">🙆‍♀️</span>Stretching</div>
+      <div class="ex-chip" onclick="selectExercise(this,'Kegel','💪')"><span class="ex-icon">💪</span>Kegel</div>
+    </div>
+    <div style="margin-bottom:8px;font-size:11px;color:var(--text-light);">Intensitas:</div>
+    <div class="intensity-row" id="intRow">
+      <button class="int-btn active-low" onclick="selectIntensity(this,'Ringan','low')">🟢 Ringan</button>
+      <button class="int-btn" onclick="selectIntensity(this,'Sedang','med')">🟡 Sedang</button>
+      <button class="int-btn" onclick="selectIntensity(this,'Berat','high')">🔴 Berat</button>
+    </div>
+    <div class="timer-display">
+      <div class="timer-number" id="timerDisplay">00:00</div>
+      <div class="timer-label" id="timerStatus">Siap mulai!</div>
+    </div>
+    <div class="timer-btns">
+      <button class="btn btn-start" id="startBtn" onclick="startStop()">▶ Mulai</button>
+      <button class="btn btn-stop" onclick="resetTimer()">↺ Reset</button>
+      <button class="btn btn-outline" onclick="saveSession()">✓ Simpan</button>
+    </div>
+    <div class="note-row">
+      <input class="note-input" id="sessionNote" placeholder="Catatan sesi (opsional)..." />
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="icon-circle icon-water">💧</div>
+      <div><div class="card-title">Hidrasi</div><div class="card-sub">Target 8–10 gelas/hari untuk bumil</div></div>
+    </div>
+    <div class="water-count"><span id="waterCount">0</span> <span style="font-size:16px;color:var(--text-light);">/ 10</span></div>
+    <div class="water-goal-text" id="waterMsg">Yuk mulai minum! 💧</div>
+    <div class="water-goal-bar"><div class="water-fill" id="waterBar" style="width:0%"></div></div>
+    <div class="glass-grid" id="glassGrid"></div>
+    <div class="water-quick">
+      <button class="btn-water btn-water-remove" onclick="changeWater(-1)">− Kurangi</button>
+      <button class="btn-water btn-water-add" onclick="changeWater(1)">+ Tambah Gelas 💧</button>
+    </div>
+  </div>
+
+  <!-- VITAMIN CARD -->
+
+  <div class="card">
+    <div class="card-header">
+      <div class="icon-circle icon-vit">💊</div>
+      <div><div class="card-title">Vitamin Hari Ini</div><div class="card-sub" id="vitSubToday">Centang yang sudah diminum</div></div>
+    </div>
+    <div class="vit-list" id="vitListToday"></div>
+    <div class="vit-progress">
+      <div class="vit-prog-bar"><div class="vit-prog-fill" id="vitProgFill" style="width:0%"></div></div>
+      <div class="vit-prog-text" id="vitProgText">0 / 4</div>
+    </div>
+    <div id="vitAllDone" style="display:none;" class="vit-all-done">✨ Semua vitamin sudah diminum! Keren banget Misyel! 👏</div>
+  </div>
+</div>
+
+<!-- ===== CALENDAR ===== -->
+
+<div class="page" id="page-calendar">
+  <div class="card">
+    <div class="cal-nav">
+      <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+      <div class="cal-month-title" id="calMonthTitle"></div>
+      <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+    </div>
+    <div class="cal-grid" id="calGrid"></div>
+    <div style="display:flex;gap:14px;margin-top:14px;justify-content:center;flex-wrap:wrap;">
+      <span style="font-size:11px;color:var(--text-light);display:flex;align-items:center;gap:5px;"><span class="dot dot-ex" style="display:inline-block;"></span>Ada olahraga</span>
+      <span style="font-size:11px;color:var(--text-light);display:flex;align-items:center;gap:5px;"><span class="dot dot-water" style="display:inline-block;"></span>Ada log air</span>
+      <span style="font-size:11px;color:var(--text-light);display:flex;align-items:center;gap:5px;"><span class="dot dot-vit" style="display:inline-block;"></span>Vitamin</span>
+    </div>
+  </div>
+
+  <!-- SELECTED DAY DETAIL -->
+
+  <div class="card" id="selDayCard">
+    <div class="sel-day-header">
+      <div>
+        <div class="sel-day-title" id="selDayTitle">Pilih tanggal 📅</div>
+        <div class="sel-day-sub" id="selDaySub">Klik tanggal untuk lihat atau tambah log</div>
+      </div>
+      <button class="add-past-btn" id="addPastBtn" onclick="openModal()" style="display:none">+ Tambah</button>
+    </div>
+    <div id="selDayLog"><div class="log-empty">← Klik tanggal dulu ya 🌸</div></div>
+    <div id="selDayWaterRow" style="display:none;margin-top:8px;">
+      <div style="display:flex;align-items:center;gap:10px;padding:9px 11px;background:var(--cream);border-radius:11px;">
+        <span style="font-size:18px;">💧</span>
+        <div style="flex:1;font-size:12px;color:var(--text-light);">Air minum</div>
+        <div style="font-family:'Playfair Display',serif;font-size:14px;color:var(--water-deep);" id="selDayWaterVal">0 gelas</div>
+      </div>
+    </div>
+    <div id="selDayVitRow" style="display:none;margin-top:8px;">
+      <div style="padding:9px 11px;background:#F8F0FD;border-radius:11px;">
+        <div style="font-size:10px;color:#A07BC0;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;">💊 Vitamin</div>
+        <div id="selDayVitVal" style="font-size:12px;color:#6B3A8B;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== ALL LOG ===== -->
+
+<div class="page" id="page-log">
+  <div class="card">
+    <div class="card-header">
+      <div class="icon-circle icon-mint">📋</div>
+      <div><div class="card-title">Semua Aktivitas</div><div class="card-sub" id="allLogCount">–</div></div>
+    </div>
+    <div id="allLog"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL ===== -->
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Tambah Log <span id="modalDateTitle"></span></div>
+
+```
+<div class="section-label">🏃‍♀️ Olahraga</div>
+<div class="exercise-grid" id="modalExGrid">
+  <div class="ex-chip active" onclick="selectModalEx(this,'Jalan Kaki','🚶‍♀️')"><span class="ex-icon">🚶‍♀️</span>Jalan Kaki</div>
+  <div class="ex-chip" onclick="selectModalEx(this,'Yoga Prenatal','🧘‍♀️')"><span class="ex-icon">🧘‍♀️</span>Yoga</div>
+  <div class="ex-chip" onclick="selectModalEx(this,'Renang','🏊‍♀️')"><span class="ex-icon">🏊‍♀️</span>Renang</div>
+  <div class="ex-chip" onclick="selectModalEx(this,'Senam Hamil','🤸‍♀️')"><span class="ex-icon">🤸‍♀️</span>Senam</div>
+  <div class="ex-chip" onclick="selectModalEx(this,'Peregangan','🙆‍♀️')"><span class="ex-icon">🙆‍♀️</span>Stretching</div>
+  <div class="ex-chip" onclick="selectModalEx(this,'Kegel','💪')"><span class="ex-icon">💪</span>Kegel</div>
+</div>
+<div class="intensity-row" id="modalIntRow">
+  <button class="int-btn active-low" onclick="selectModalInt(this,'Ringan','low')">🟢 Ringan</button>
+  <button class="int-btn" onclick="selectModalInt(this,'Sedang','med')">🟡 Sedang</button>
+  <button class="int-btn" onclick="selectModalInt(this,'Berat','high')">🔴 Berat</button>
+</div>
+<div class="form-row-2">
+  <div>
+    <label class="form-label">Durasi (menit)</label>
+    <input class="form-input" type="number" id="modalDuration" min="1" max="300" placeholder="mis. 30" />
+  </div>
+  <div>
+    <label class="form-label">Jam mulai</label>
+    <input class="form-input" type="time" id="modalTime" value="07:00" />
+  </div>
+</div>
+<div class="form-row">
+  <label class="form-label">Catatan (opsional)</label>
+  <input class="form-input" id="modalNote" placeholder="mis. sambil dengar podcast..." />
+</div>
+
+<div class="divider"></div>
+<div class="section-label">💧 Air Minum Hari Itu</div>
+<div class="water-past-row">
+  <span style="font-size:22px;">💧</span>
+  <input class="water-past-slider" type="range" id="modalWater" min="0" max="10" value="0"
+    oninput="document.getElementById('modalWaterVal').textContent=this.value" />
+  <div class="water-past-val" id="modalWaterVal">0</div>
+  <span style="font-size:11px;color:var(--text-light);">gelas</span>
+</div>
+<div style="font-size:11px;color:var(--text-light);text-align:center;margin-bottom:4px;">Geser untuk set jumlah gelas (0–10)</div>
+
+<div class="divider"></div>
+<div class="section-label">💊 Vitamin Hari Itu</div>
+<div class="modal-vit-grid" id="modalVitGrid">
+  <div class="modal-vit-item" onclick="toggleModalVit(this,'folat')" data-vit="folat">
+    <div class="modal-vit-cb">✓</div>
+    <div><div class="modal-vit-label">🌿 Asam Folat</div></div>
+  </div>
+  <div class="modal-vit-item" onclick="toggleModalVit(this,'vitd3')" data-vit="vitd3">
+    <div class="modal-vit-cb">✓</div>
+    <div><div class="modal-vit-label">☀️ Vitamin D3</div></div>
+  </div>
+  <div class="modal-vit-item" onclick="toggleModalVit(this,'kalsium')" data-vit="kalsium">
+    <div class="modal-vit-cb">✓</div>
+    <div><div class="modal-vit-label">🦴 Kalsium</div></div>
+  </div>
+  <div class="modal-vit-item" onclick="toggleModalVit(this,'fe')" data-vit="fe">
+    <div class="modal-vit-cb">✓</div>
+    <div><div class="modal-vit-label">🩸 Tab. Darah</div></div>
+  </div>
+</div>
+
+<div class="modal-btns">
+  <button class="btn-ghost" onclick="closeModal()" style="flex:1;">Batal</button>
+  <button class="btn-primary" onclick="saveModalSession()" style="flex:2;">💾 Simpan Log</button>
+</div>
+```
+
+  </div>
+</div>
+
+<script>
+// ===== CONSTANTS =====
+const DAYS_FULL = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const DAYS_SHORT = ['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+const MONTHS = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const MONTHS_S = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+
+const nowReal = new Date();
+
+function todayKey(){
+  return `${nowReal.getFullYear()}-${String(nowReal.getMonth()+1).padStart(2,'0')}-${String(nowReal.getDate()).padStart(2,'0')}`;
+}
+function makeDateKey(y,m,d){
+  return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+}
+function formatDateKey(key){
+  const [y,m,d] = key.split('-').map(Number);
+  const date = new Date(y,m-1,d);
+  return {date, label:`${DAYS_FULL[date.getDay()]}, ${d} ${MONTHS_S[m-1]} ${y}`};
+}
+
+const TODAY = todayKey();
+
+// ===== STATE =====
+let sessions = JSON.parse(localStorage.getItem('pregnancySessions')||'[]');
+let waterMap = JSON.parse(localStorage.getItem('pregnancyWaterMap')||'{}');
+
+// Migrate legacy water
+const lw = localStorage.getItem('pregnancyWater');
+const ld = localStorage.getItem('pregnancyWaterDate');
+if(lw && ld && !waterMap[ld]){ waterMap[ld]=parseInt(lw); localStorage.setItem('pregnancyWaterMap',JSON.stringify(waterMap)); }
+
+let waterCount = waterMap[TODAY]||0;
+let selectedEx={name:'Jalan Kaki',icon:'🚶‍♀️'};
+let selectedIntensity={label:'Ringan',level:'low'};
+let timerInterval=null,seconds=0,running=false;
+let calYear=nowReal.getFullYear(),calMonth=nowReal.getMonth();
+let selectedDate=null;
+let modalEx={name:'Jalan Kaki',icon:'🚶‍♀️'};
+let modalInt={label:'Ringan',level:'low'};
+
+// VITAMINS
+const VITAMINS=[
+  {id:'folat',name:'Asam Folat',desc:'Perkembangan saraf & otak bayi',emoji:'🌿'},
+  {id:'vitd3',name:'Vitamin D3',desc:'Tulang & imunitas',emoji:'☀️'},
+  {id:'kalsium',name:'Kalsium',desc:'Kekuatan tulang & gigi',emoji:'🦴'},
+  {id:'fe',name:'Tab. Penambah Darah',desc:'Cegah anemia',emoji:'🩸'},
+];
+// vitMap: { "2025-04-20": ["folat","vitd3"], ... }
+let vitMap=JSON.parse(localStorage.getItem('pregnancyVitMap')||'{}');
+let modalVitSelected=new Set();
+
+// ===== DATE BAR =====
+document.getElementById('dateBar').textContent=`${DAYS_FULL[nowReal.getDay()]}, ${nowReal.getDate()} ${MONTHS_S[nowReal.getMonth()]} ${nowReal.getFullYear()}`;
+
+// ===== TABS =====
+function switchTab(tab,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('page-'+tab).classList.add('active');
+  btn.classList.add('active');
+  if(tab==='calendar') renderCalendar();
+  if(tab==='log') renderAllLog();
+}
+
+// ===== EXERCISE / INTENSITY =====
+function selectExercise(el,name,icon){
+  document.querySelectorAll('#exGrid .ex-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); selectedEx={name,icon};
+}
+function selectIntensity(el,label,level){
+  document.querySelectorAll('#intRow .int-btn').forEach(b=>b.classList.remove('active-low','active-med','active-high'));
+  el.classList.add('active-'+level); selectedIntensity={label,level};
+}
+function selectModalEx(el,name,icon){
+  document.querySelectorAll('#modalExGrid .ex-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active'); modalEx={name,icon};
+}
+function selectModalInt(el,label,level){
+  document.querySelectorAll('#modalIntRow .int-btn').forEach(b=>b.classList.remove('active-low','active-med','active-high'));
+  el.classList.add('active-'+level); modalInt={label,level};
+}
+
+// ===== TIMER =====
+function formatTime(s){
+  return `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
+}
+function startStop(){
+  if(!running){
+    running=true;
+    document.getElementById('startBtn').textContent='⏸ Pause';
+    document.getElementById('timerStatus').textContent=selectedEx.name+' sedang berjalan...';
+    document.getElementById('timerStatus').classList.add('pulse');
+    timerInterval=setInterval(()=>{seconds++;document.getElementById('timerDisplay').textContent=formatTime(seconds);},1000);
+  } else {
+    running=false; clearInterval(timerInterval);
+    document.getElementById('startBtn').textContent='▶ Lanjut';
+    document.getElementById('timerStatus').textContent='Dijeda – klik Lanjut atau Simpan';
+    document.getElementById('timerStatus').classList.remove('pulse');
+  }
+}
+function resetTimer(){
+  running=false; clearInterval(timerInterval); seconds=0;
+  document.getElementById('timerDisplay').textContent='00:00';
+  document.getElementById('startBtn').textContent='▶ Mulai';
+  document.getElementById('timerStatus').textContent='Siap mulai!';
+  document.getElementById('timerStatus').classList.remove('pulse');
+  document.getElementById('sessionNote').value='';
+}
+function saveSession(){
+  if(seconds<5){alert('Minimal 5 detik dong ya! 😄');return;}
+  const session={
+    id:Date.now(),date:TODAY,
+    time:nowReal.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}),
+    name:selectedEx.name,icon:selectedEx.icon,
+    intensity:selectedIntensity.label,intensityLevel:selectedIntensity.level,
+    duration:seconds,note:document.getElementById('sessionNote').value
+  };
+  sessions.push(session);
+  localStorage.setItem('pregnancySessions',JSON.stringify(sessions));
+  resetTimer(); updateStats();
+}
+
+// ===== WATER =====
+const waterMsgs=['Yuk mulai minum! 💧','Bagus! Terus semangat 💪','Udah 2 gelas! Keren 🌟','Setengah jalan ✨','Mantap! Bayi seneng 👶','Halfway there! 🎯','6 gelas! Luar biasa 🌸','Almost there! 💕','8 gelas! Target 🎉','Super hydrated! 💎','10 gelas! Luar biasa 🌈✨'];
+function renderWater(){
+  const pct=Math.min((waterCount/10)*100,100);
+  document.getElementById('waterCount').textContent=waterCount;
+  document.getElementById('waterBar').style.width=pct+'%';
+  document.getElementById('waterMsg').textContent=waterMsgs[Math.min(waterCount,10)];
+  const grid=document.getElementById('glassGrid');
+  grid.innerHTML='';
+  for(let i=0;i<10;i++){
+    const btn=document.createElement('button');
+    btn.className='glass-btn'+(i<waterCount?' filled':'');
+    btn.textContent=i<waterCount?'💧':'🥛';
+    btn.onclick=()=>{waterCount=i<waterCount?i:i+1;saveWater();};
+    grid.appendChild(btn);
+  }
+  updateStats();
+}
+function changeWater(delta){waterCount=Math.max(0,Math.min(10,waterCount+delta));saveWater();}
+function saveWater(){waterMap[TODAY]=waterCount;localStorage.setItem('pregnancyWaterMap',JSON.stringify(waterMap));renderWater();}
+
+// ===== VITAMINS =====
+function renderVitamins(){
+  const checked=vitMap[TODAY]||[];
+  const list=document.getElementById('vitListToday');
+  list.innerHTML=VITAMINS.map(v=>{
+    const isChecked=checked.includes(v.id);
+    return `<div class="vit-item${isChecked?' checked':''}" onclick="toggleVit('${v.id}')">
+      <span class="vit-emoji">${v.emoji}</span>
+      <div class="vit-info"><div class="vit-name">${v.name}</div><div class="vit-desc">${v.desc}</div></div>
+      <div class="vit-checkbox">${isChecked?'✓':''}</div>
+    </div>`;
+  }).join('');
+  const pct=Math.round((checked.length/VITAMINS.length)*100);
+  document.getElementById('vitProgFill').style.width=pct+'%';
+  document.getElementById('vitProgText').textContent=`${checked.length} / ${VITAMINS.length}`;
+  const allDone=document.getElementById('vitAllDone');
+  allDone.style.display=checked.length===VITAMINS.length?'block':'none';
+  document.getElementById('vitSubToday').textContent=
+    checked.length===0?'Centang yang sudah diminum':
+    checked.length===VITAMINS.length?'Lengkap semua! 🎉':
+    `${checked.length} dari ${VITAMINS.length} sudah diminum`;
+}
+function toggleVit(id){
+  const cur=vitMap[TODAY]||[];
+  const idx=cur.indexOf(id);
+  if(idx===-1) cur.push(id); else cur.splice(idx,1);
+  vitMap[TODAY]=cur;
+  localStorage.setItem('pregnancyVitMap',JSON.stringify(vitMap));
+  renderVitamins();
+  renderCalendar();
+}
+function toggleModalVit(el,id){
+  if(modalVitSelected.has(id)){modalVitSelected.delete(id);el.classList.remove('checked');}
+  else{modalVitSelected.add(id);el.classList.add('checked');}
+}
+
+// ===== STATS =====
+function updateStats(){
+  const ts=sessions.filter(s=>s.date===TODAY);
+  document.getElementById('totalMinToday').textContent=Math.round(ts.reduce((a,b)=>a+b.duration,0)/60);
+  document.getElementById('totalSessionsToday').textContent=ts.length;
+  document.getElementById('waterGlassesToday').textContent=waterCount;
+}
+
+// ===== CALENDAR =====
+function changeMonth(delta){
+  calMonth+=delta;
+  if(calMonth>11){calMonth=0;calYear++;}
+  if(calMonth<0){calMonth=11;calYear--;}
+  renderCalendar();
+}
+
+function renderCalendar(){
+  document.getElementById('calMonthTitle').textContent=`${MONTHS[calMonth]} ${calYear}`;
+  const grid=document.getElementById('calGrid');
+  grid.innerHTML='';
+
+  DAYS_SHORT.forEach(d=>{
+    const el=document.createElement('div');
+    el.className='cal-dow';el.textContent=d;grid.appendChild(el);
+  });
+
+  const firstDay=new Date(calYear,calMonth,1).getDay();
+  const daysInMonth=new Date(calYear,calMonth+1,0).getDate();
+  const todayDate=new Date(nowReal.getFullYear(),nowReal.getMonth(),nowReal.getDate());
+
+  for(let i=0;i<firstDay;i++){
+    const el=document.createElement('div');
+    el.className='cal-day cal-empty';grid.appendChild(el);
+  }
+
+  for(let d=1;d<=daysInMonth;d++){
+    const key=makeDateKey(calYear,calMonth,d);
+    const thisDate=new Date(calYear,calMonth,d);
+    const isFuture=thisDate>todayDate;
+    const isToday=key===TODAY;
+    const isSel=key===selectedDate;
+    const hasSess=sessions.some(s=>s.date===key);
+    const hasWat=(waterMap[key]||0)>0;
+    const hasVit=(vitMap[key]||[]).length>0;
+
+    const btn=document.createElement('button');
+    let cls='cal-day';
+    if(isFuture) cls+=' cal-future';
+    else if(isSel) cls+=' cal-selected';
+    else if(isToday) cls+=' cal-today';
+
+    btn.innerHTML=`<span>${d}</span>`;
+    if((hasSess||hasWat||hasVit)&&!isFuture){
+      const dots=document.createElement('div');
+      dots.className='dot-row';
+      if(hasSess){const dot=document.createElement('div');dot.className='dot '+(isSel?'dot-ex-w':'dot-ex');dots.appendChild(dot);}
+      if(hasWat){const dot=document.createElement('div');dot.className='dot '+(isSel?'dot-water-w':'dot-water');dots.appendChild(dot);}
+      if(hasVit){const dot=document.createElement('div');dot.className='dot '+(isSel?'dot-vit-w':'dot-vit');dots.appendChild(dot);}
+      btn.appendChild(dots);
+    }
+    btn.className=cls;
+    if(!isFuture) btn.onclick=()=>selectCalDay(key);
+    grid.appendChild(btn);
+  }
+
+  if(selectedDate) renderSelDay();
+}
+
+function selectCalDay(key){
+  selectedDate=key;
+  renderCalendar();
+  renderSelDay();
+}
+
+function renderSelDay(){
+  if(!selectedDate)return;
+  const [y,m,d]=selectedDate.split('-').map(Number);
+  const date=new Date(y,m-1,d);
+  const todayDate=new Date(nowReal.getFullYear(),nowReal.getMonth(),nowReal.getDate());
+  const isFuture=date>todayDate;
+  const isToday=selectedDate===TODAY;
+
+  document.getElementById('selDayTitle').textContent=
+    `${DAYS_FULL[date.getDay()]}, ${d} ${MONTHS_S[m-1]} ${y}`+(isToday?' (Hari Ini)':'');
+  document.getElementById('selDaySub').textContent=isToday?'Tracking aktif hari ini':'Klik + Tambah untuk isi log yang kelewat';
+
+  const addBtn=document.getElementById('addPastBtn');
+  if(isFuture){ addBtn.style.display='none'; }
+  else { addBtn.style.display='inline-block'; addBtn.textContent=isToday?'+ Tambah':'+ Tambah Kelewat'; }
+
+  // Sessions
+  const daySess=sessions.filter(s=>s.date===selectedDate);
+  const log=document.getElementById('selDayLog');
+  if(daySess.length===0){
+    log.innerHTML='<div class="log-empty">Belum ada olahraga dicatat 🌸</div>';
+  } else {
+    log.innerHTML=daySess.slice().reverse().map(s=>`
+      <div class="log-item">
+        <span class="log-item-icon">${s.icon}</span>
+        <div class="log-item-info">
+          <div class="log-item-name">${s.name}</div>
+          <div class="log-item-meta">${s.time} · ${s.intensity}${s.note?' · '+s.note:''}</div>
+        </div>
+        <div class="log-item-dur">${formatTime(s.duration)}</div>
+        <button class="log-item-del" onclick="deleteSession(${s.id},'calendar')">✕</button>
+      </div>
+    `).join('');
+  }
+
+  // Water
+  const dayWat=waterMap[selectedDate]||0;
+  const waterRow=document.getElementById('selDayWaterRow');
+  if(!isFuture){
+    waterRow.style.display='block';
+    document.getElementById('selDayWaterVal').textContent=dayWat+' gelas';
+  } else {
+    waterRow.style.display='none';
+  }
+
+  // Vitamins
+  const dayVit=vitMap[selectedDate]||[];
+  const vitRow=document.getElementById('selDayVitRow');
+  if(!isFuture){
+    vitRow.style.display='block';
+    if(dayVit.length===0){
+      document.getElementById('selDayVitVal').textContent='Belum ada vitamin dicatat';
+    } else {
+      const names=dayVit.map(id=>{const v=VITAMINS.find(x=>x.id===id);return v?v.emoji+' '+v.name:'';}).filter(Boolean);
+      document.getElementById('selDayVitVal').innerHTML=names.join(' &nbsp;·&nbsp; ')+(dayVit.length===VITAMINS.length?' 🎉':'');
+    }
+  } else {
+    vitRow.style.display='none';
+  }
+}
+
+// ===== ALL LOG =====
+function renderAllLog(){
+  const all=sessions.slice().sort((a,b)=>b.id-a.id);
+  const el=document.getElementById('allLog');
+  document.getElementById('allLogCount').textContent=all.length+' sesi total';
+  if(all.length===0){el.innerHTML='<div class="log-empty">Belum ada log tersimpan 🌸</div>';return;}
+
+  const byDate={};
+  all.forEach(s=>{if(!byDate[s.date])byDate[s.date]=[];byDate[s.date].push(s);});
+
+  el.innerHTML=Object.keys(byDate).sort((a,b)=>b.localeCompare(a)).map(date=>{
+    const {label}=formatDateKey(date);
+    const items=byDate[date];
+    const totalMin=Math.round(items.reduce((a,b)=>a+b.duration,0)/60);
+    const dayWat=waterMap[date]||0;
+    const dayVit=vitMap[date]||[];
+    const vitStr=dayVit.length>0?` · 💊${dayVit.length}vit`:'';
+    return `
+      <div style="margin-bottom:16px;">
+        <div class="log-group-label">${date===TODAY?'Hari Ini':label} · ${totalMin} menit${dayWat>0?' · 💧'+dayWat+'gls':''}${vitStr}</div>
+        ${items.map(s=>`
+          <div class="log-item">
+            <span class="log-item-icon">${s.icon}</span>
+            <div class="log-item-info">
+              <div class="log-item-name">${s.name}</div>
+              <div class="log-item-meta">${s.time} · ${s.intensity}${s.note?' · '+s.note:''}</div>
+            </div>
+            <div class="log-item-dur">${formatTime(s.duration)}</div>
+            <button class="log-item-del" onclick="deleteSession(${s.id},'log')">✕</button>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }).join('');
+}
+
+// ===== DELETE =====
+function deleteSession(id,ctx){
+  if(!confirm('Hapus sesi ini?'))return;
+  sessions=sessions.filter(s=>s.id!==id);
+  localStorage.setItem('pregnancySessions',JSON.stringify(sessions));
+  updateStats();
+  if(ctx==='calendar'){renderCalendar();}
+  else if(ctx==='log'){renderAllLog();}
+}
+
+// ===== MODAL =====
+function openModal(){
+  if(!selectedDate)return;
+  const [y,m,d]=selectedDate.split('-').map(Number);
+  const isToday=selectedDate===TODAY;
+  document.getElementById('modalDateTitle').textContent=isToday?'Hari Ini':`${d} ${MONTHS_S[m-1]} ${y}`;
+
+  // Reset
+  document.querySelectorAll('#modalExGrid .ex-chip').forEach(c=>c.classList.remove('active'));
+  document.querySelector('#modalExGrid .ex-chip').classList.add('active');
+  modalEx={name:'Jalan Kaki',icon:'🚶‍♀️'};
+  document.querySelectorAll('#modalIntRow .int-btn').forEach(b=>b.classList.remove('active-low','active-med','active-high'));
+  document.querySelector('#modalIntRow .int-btn').classList.add('active-low');
+  modalInt={label:'Ringan',level:'low'};
+  document.getElementById('modalDuration').value='';
+  document.getElementById('modalTime').value='07:00';
+  document.getElementById('modalNote').value='';
+
+  const existWat=waterMap[selectedDate]||0;
+  document.getElementById('modalWater').value=existWat;
+  document.getElementById('modalWaterVal').textContent=existWat;
+
+  // Pre-fill vitamins
+  modalVitSelected=new Set(vitMap[selectedDate]||[]);
+  document.querySelectorAll('#modalVitGrid .modal-vit-item').forEach(el=>{
+    const id=el.dataset.vit;
+    if(modalVitSelected.has(id)) el.classList.add('checked');
+    else el.classList.remove('checked');
+  });
+
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+function closeModalOutside(e){if(e.target===document.getElementById('modalOverlay'))closeModal();}
+
+function saveModalSession(){
+  const durMin=parseInt(document.getElementById('modalDuration').value);
+  const timeVal=document.getElementById('modalTime').value||'07:00';
+  const waterVal=parseInt(document.getElementById('modalWater').value)||0;
+  let saved=false;
+
+  if(durMin&&durMin>0){
+    const session={
+      id:Date.now(),date:selectedDate,time:timeVal,
+      name:modalEx.name,icon:modalEx.icon,
+      intensity:modalInt.label,intensityLevel:modalInt.level,
+      duration:durMin*60,note:document.getElementById('modalNote').value,
+      isPast:selectedDate!==TODAY
+    };
+    sessions.push(session);
+    localStorage.setItem('pregnancySessions',JSON.stringify(sessions));
+    saved=true;
+  }
+
+  waterMap[selectedDate]=waterVal;
+  localStorage.setItem('pregnancyWaterMap',JSON.stringify(waterMap));
+  if(selectedDate===TODAY){waterCount=waterVal;renderWater();}
+
+  // Save vitamins
+  vitMap[selectedDate]=Array.from(modalVitSelected);
+  localStorage.setItem('pregnancyVitMap',JSON.stringify(vitMap));
+  if(selectedDate===TODAY) renderVitamins();
+
+  closeModal();
+  renderCalendar();
+  updateStats();
+  if(!saved&&durMin!==0&&isNaN(durMin)){alert('Kalau mau tambah olahraga, isi durasinya ya! 💕');}
+}
+
+// ===== INIT =====
+updateStats();
+renderWater();
+renderVitamins();
+</script>
+
+</body>
+</html>
